@@ -1,11 +1,10 @@
 const User = require('../models/users');
 const Piggybank = require('../models/piggybank');
 
+const AuthService = require('../services/authenticationService');
+
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
-const jwt = require('jsonwebtoken')
-const tokenSecret = process.env.JWT_TOKEN_SECRET
 
 createUser = async function (req, res) {
     bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
@@ -21,7 +20,7 @@ createUser = async function (req, res) {
                 const newUser = await user.save()
                 res.status(201).json({
                     user: newUser,
-                    token: generateToken(newUser)
+                    token: AuthService.generateToken(newUser)
                 })
             } catch (err) {
                 res.status(400).json({ message: err.message })
@@ -38,7 +37,7 @@ userLogin = async function (req, res){
             else {
                 bcrypt.compare(req.body.password, user.password, (error, match) => {
                     if (error) res.status(500).json(error)
-                    else if (match) res.status(200).json({token: generateToken(user)})
+                    else if (match) res.status(200).json({ token: AuthService.generateToken(user)})
                     else res.status(403).json({error: 'Password does not math'})
                 })
             }
@@ -46,10 +45,6 @@ userLogin = async function (req, res){
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
-}
-
-generateToken = function (user) {
-    return jwt.sign({data: user}, tokenSecret, {expiresIn: '24h'})
 }
 
 getAllUsers = async function (req, res) {
@@ -110,11 +105,30 @@ deleteUserById = async function (req, res) {
     }
 }
 
+getAllPiggybanksByUserId = async function (req, res) {
+    const ownerId = await req.params.userId
+    
+    await User.findOne({ _id: ownerId}, async (err, user) => {
+        if(!user) res.status(404).json({error: 'No user with that id found'})
+        else {
+            try{
+                const piggybanks = user.piggybanks
+                res.status(200).json(piggybanks)
+                
+            } catch (err) {
+                res.status(500).json({ message: err.message })
+            }
+        }
+    }).populate('piggybanks')
+    .exec()
+}
+
 module.exports = {
     createUser,
     userLogin,
     getAllUsers,
     getUserById,
     updateUserById,
-    deleteUserById
+    deleteUserById,
+    getAllPiggybanksByUserId
 }
