@@ -35,7 +35,7 @@ userLogin = async function (req, res){
             else {
                 bcrypt.compare(req.body.password, user.password, (error, match) => {
                     if (error) res.status(500).json(error)
-                    else if (match) res.status(200).json({ token: AuthService.generateToken(user)})
+                    else if (match) res.status(200).json({ user:user, token: AuthService.generateToken(user)})
                     else res.status(403).json({error: 'Password does not math'})
                 })
             }
