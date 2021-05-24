@@ -8,7 +8,8 @@ const PiggyBankSchema = new mongoose.Schema(
         },
         balance: {
             type: Number,
-            required: false
+            min: 0,
+            required: true,
         },
         owner: {
             type: mongoose.Schema.Types.ObjectId, 
