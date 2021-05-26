@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 })
 
 // Start server
-const port = process.env.API_PORT || 10000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Piggybank server has started on port http://localhost:${port}`)
 })
