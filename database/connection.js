@@ -8,7 +8,8 @@ const credentials = {
 }
 
 // URL to the DB
-const connectionUrl = `mongodb://${credentials.server}:${credentials.port}/${credentials.database}`;
+const connectionUrl = `mongodb+srv://piggyadmin:vivaelparo@piggybank.voarm.mongodb.net/test`
+// const connectionUrl = `mongodb://${credentials.server}:${credentials.port}/${credentials.database}`;
 // Options for connect to the DB
 const connectionOptions = {
     useNewUrlParser: true,
